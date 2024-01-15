@@ -1,3 +1,5 @@
+import hitSound from "./sounds/hit.wav";
+
 export enum Direction {
   UP = "up",
   DOWN = "down",
@@ -28,9 +30,7 @@ export class Game {
     this.ctx.clearRect(0, 0, this.cnv.width, this.cnv.height);
     this.circle.move(this.direction);
 
-    const c = isCollision(this.square, this.circle);
-
-    if (c) {
+    if (isCollision(this.square, this.circle)) {
       this.square = new Square(
         this.ctx,
         getRandomInt(200),
@@ -56,6 +56,24 @@ const isCollision = (square: Square, circle: Circle) => {
   );
 };
 
+// Free sounds -> https://mixkit.co/free-sound-effects/impact/
+export class OutOfBoundsSound {
+  private sound: HTMLAudioElement;
+  private prevDirection: Direction;
+
+  constructor(src: string, direction: Direction) {
+    this.sound = new Audio(src);
+    this.prevDirection = direction;
+  }
+
+  public play = (direction: Direction) => {
+    if (this.prevDirection !== direction) {
+      this.sound.play();
+      this.prevDirection = direction;
+    }
+  };
+}
+
 export class Circle {
   private ctx: CanvasRenderingContext2D;
   private radius: number;
@@ -63,6 +81,7 @@ export class Circle {
   private height: number;
   private x: number = 50;
   private y: number = 50;
+  private sound: OutOfBoundsSound;
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -74,6 +93,7 @@ export class Circle {
     this.width = width;
     this.height = height;
     this.radius = radius;
+    this.sound = new OutOfBoundsSound(hitSound, Direction.LEFT);
   }
 
   public move = (direction: Direction) => {
@@ -81,21 +101,29 @@ export class Circle {
       case Direction.UP:
         if (this.y > this.radius) {
           this.y -= 1;
+        } else {
+          this.sound.play(Direction.UP);
         }
         break;
       case Direction.DOWN:
         if (this.y + this.radius < this.height) {
           this.y += 1;
+        } else {
+          this.sound.play(Direction.DOWN);
         }
         break;
       case Direction.RIGHT:
         if (this.x + this.radius < this.width) {
           this.x += 1;
+        } else {
+          this.sound.play(Direction.RIGHT);
         }
         break;
       case Direction.LEFT:
         if (this.x > this.radius) {
           this.x -= 1;
+        } else {
+          this.sound.play(Direction.LEFT);
         }
         break;
     }
