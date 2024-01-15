@@ -11,8 +11,14 @@ const GameBoard: FC = () => {
       throw new Error("Could not initialize canvas");
     }
 
-    canvasRef.current.width = window.innerWidth;
-    canvasRef.current.height = window.innerHeight;
+    const gameBoard = document.getElementById("game-board");
+
+    if (!gameBoard) {
+      throw new Error("Could not get game board width");
+    }
+
+    canvasRef.current.width = gameBoard.clientWidth;
+    canvasRef.current.height = gameBoard.clientHeight;
 
     contextRef.current = canvasRef.current.getContext("2d");
 
@@ -20,7 +26,7 @@ const GameBoard: FC = () => {
       throw new Error("Could not get 2D context");
     }
 
-    gameRef.current = new Game(contextRef.current);
+    gameRef.current = new Game(contextRef.current, canvasRef.current);
 
     window.onkeydown = (e) => {
       switch (e.key) {
@@ -52,7 +58,15 @@ const GameBoard: FC = () => {
       }
     };
 
-    /*const draw = (event) => {
+    requestAnimationFrame(() => gameRef.current?.animate());
+  }, []);
+
+  return <canvas ref={canvasRef} />;
+};
+
+export default GameBoard;
+
+/*const draw = (event) => {
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -71,42 +85,3 @@ const GameBoard: FC = () => {
     return () => {
       canvas.removeEventListener("mousemove", draw);
     };*/
-  }, []);
-
-  return <canvas ref={canvasRef} />;
-};
-
-export default GameBoard;
-
-const drawCircle = (cnv: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-  ctx.beginPath();
-  ctx.arc(100, 100, 10, 0, 5 * Math.PI);
-  ctx.stroke();
-};
-/*
-    window.onkeydown = (e) => {
-      switch (e.key) {
-        case "w":
-        case "ArrowUp":
-          console.log("UP");
-          break;
-        case "s":
-        case "ArrowDown":
-          console.log("DOWN");
-          break;
-        case "d":
-        case "ArrowRight":
-          console.log("RIGHT");
-          break;
-        case "a":
-        case "ArrowLeft":
-          console.log("LEFT");
-          break;
-        case "Escape":
-          console.log("ESC");
-          break;
-        default:
-          break;
-      }
-    };
-*/
