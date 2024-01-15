@@ -67,7 +67,7 @@ export class Circle {
     }
 
     this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 5);
+    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     this.ctx.stroke();
   };
 }
