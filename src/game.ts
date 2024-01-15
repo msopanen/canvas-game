@@ -11,10 +11,13 @@ export class Game {
   private circle: Circle;
   private direction: Direction = Direction.RIGHT;
 
+  private square: Square;
+
   constructor(ctx: CanvasRenderingContext2D, cnv: HTMLCanvasElement) {
     this.ctx = ctx;
     this.cnv = cnv;
     this.circle = new Circle(ctx, this.cnv.width, this.cnv.height);
+    this.square = new Square(ctx, 50, this.cnv.width, this.cnv.height);
   }
 
   public move(direction: Direction) {
@@ -24,22 +27,53 @@ export class Game {
   public animate() {
     this.ctx.clearRect(0, 0, this.cnv.width, this.cnv.height);
     this.circle.move(this.direction);
+
+    const c = isCollision(this.square, this.circle);
+
+    if (c) {
+      this.square = new Square(
+        this.ctx,
+        getRandomInt(200),
+        this.cnv.width,
+        this.cnv.height,
+      );
+    }
+
+    this.square.draw();
+
     requestAnimationFrame(() => this.animate());
   }
 }
 
+const isCollision = (square: Square, circle: Circle) => {
+  const s = square.getXyz();
+  const c = circle.getXyz();
+  return (
+    c.x + c.z >= s.x &&
+    c.x - c.z <= s.x + s.z &&
+    c.y + c.z >= s.y &&
+    c.y - c.z <= s.y + s.z
+  );
+};
+
 export class Circle {
   private ctx: CanvasRenderingContext2D;
-  private radius: number = 10;
+  private radius: number;
   private width: number;
   private height: number;
   private x: number = 50;
   private y: number = 50;
 
-  constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    radius: number = 10,
+  ) {
     this.ctx = ctx;
     this.width = width;
     this.height = height;
+    this.radius = radius;
   }
 
   public move = (direction: Direction) => {
@@ -69,6 +103,40 @@ export class Circle {
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     this.ctx.stroke();
+  };
+
+  public getXyz = () => {
+    return { x: this.x, y: this.y, z: this.radius };
+  };
+}
+
+const getRandomInt = (max: number) => Math.floor(Math.random() * max);
+
+export class Square {
+  private size: number = 10;
+  private ctx: CanvasRenderingContext2D;
+  private x: number;
+  private y: number;
+
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    size: number = 10,
+    maxWidth: number,
+    maxHeight: number,
+  ) {
+    this.ctx = ctx;
+    this.size = size;
+    this.x = getRandomInt(maxWidth - size);
+    this.y = getRandomInt(maxHeight - size);
+  }
+
+  public draw = () => {
+    this.ctx.beginPath();
+    this.ctx.strokeRect(this.x, this.y, this.size, this.size);
+  };
+
+  public getXyz = () => {
+    return { x: this.x, y: this.y, z: this.size };
   };
 }
 
