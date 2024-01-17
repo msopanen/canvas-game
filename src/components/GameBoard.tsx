@@ -1,5 +1,7 @@
 import { FC, useEffect, useRef } from "react";
-import { Direction, Game } from "../game";
+import { Game, Context } from "../game";
+import { Direction } from "../types";
+import { SoundPlayer } from "../sounds";
 
 const GameBoard: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +28,13 @@ const GameBoard: FC = () => {
       throw new Error("Could not get 2D context");
     }
 
-    gameRef.current = new Game(contextRef.current, canvasRef.current);
+    const ctx = new Context(
+      contextRef.current,
+      canvasRef.current,
+      new SoundPlayer(),
+    );
+
+    gameRef.current = new Game(ctx);
 
     window.onkeydown = (e) => {
       switch (e.key) {
