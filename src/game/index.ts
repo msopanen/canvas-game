@@ -8,15 +8,18 @@ export class Context {
   public ctx: CanvasRenderingContext2D;
   public cnv: HTMLCanvasElement;
   public player: SoundPlayer;
+  public onHit: () => void;
 
   constructor(
     ctx: CanvasRenderingContext2D,
     cnv: HTMLCanvasElement,
     player: SoundPlayer,
+    onHit: () => void,
   ) {
     this.ctx = ctx;
     this.cnv = cnv;
     this.player = player;
+    this.onHit = onHit;
   }
 }
 
@@ -26,7 +29,7 @@ export class Game {
   private direction: Direction = Direction.RIGHT;
   private circle: Circle;
   private square: Square;
-  private afId: number = 0;
+  private frameId: number = 0;
 
   constructor(c: Context) {
     this.c = c;
@@ -51,17 +54,19 @@ export class Game {
 
     if (hit) {
       this.c.player.playCollision();
+      this.c.onHit();
       this.square = createRandomSquare(this.c);
+      this.circle.increaseSpeed(1);
     }
 
     this.square.draw();
     this.circle.draw();
 
-    this.afId = requestAnimationFrame(() => this.animate());
+    this.frameId = requestAnimationFrame(() => this.animate());
   };
 
   public stop = () => {
-    cancelAnimationFrame(this.afId);
+    cancelAnimationFrame(this.frameId);
   };
 }
 

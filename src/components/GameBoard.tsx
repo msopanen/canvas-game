@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
 import { Game, Context } from "../game";
 import { Direction } from "../types";
 import { SoundPlayer } from "../sounds";
@@ -6,9 +6,10 @@ import { SoundPlayer } from "../sounds";
 export interface GameBoardProps {
   start: boolean;
   onStop: () => void;
+  onHit: () => void;
 }
 
-const GameBoard: FC<GameBoardProps> = ({ start, onStop }) => {
+const GameBoard: FC<GameBoardProps> = ({ start, onStop, onHit }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const gameRef = useRef<Game | null>(null);
@@ -37,6 +38,7 @@ const GameBoard: FC<GameBoardProps> = ({ start, onStop }) => {
       contextRef.current,
       canvasRef.current,
       new SoundPlayer(),
+      onHit,
     );
 
     gameRef.current = new Game(ctx);
@@ -76,7 +78,7 @@ const GameBoard: FC<GameBoardProps> = ({ start, onStop }) => {
     if (start) {
       requestAnimationFrame(() => gameRef.current?.animate());
     }
-  }, [start, onStop]);
+  }, [start]);
 
   return <canvas ref={canvasRef} />;
 };

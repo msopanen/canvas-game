@@ -3,6 +3,7 @@ import { Direction } from "../types";
 export abstract class Shape {
   protected x: number;
   protected y: number;
+  protected speed: number = 1;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -14,18 +15,19 @@ export abstract class Shape {
 
   public move = (direction: Direction) => {
     if (!this.isOutOfBounds(direction)) {
+      const { speed } = this;
       switch (direction) {
         case Direction.UP:
-          this.y -= 1;
+          this.y -= speed;
           break;
         case Direction.DOWN:
-          this.y += 1;
+          this.y += speed;
           break;
         case Direction.RIGHT:
-          this.x += 1;
+          this.x += speed;
           break;
         case Direction.LEFT:
-          this.x -= 1;
+          this.x -= speed;
           break;
       }
     }

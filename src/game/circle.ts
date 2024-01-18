@@ -29,7 +29,7 @@ export class Circle extends Shape {
 
     switch (direction) {
       case Direction.UP:
-        if (y >= r) return false;
+        if (y > r) return false;
         break;
       case Direction.DOWN:
         if (y + r < cnv.height) return false;
@@ -38,7 +38,7 @@ export class Circle extends Shape {
         if (x + r < cnv.width) return false;
         break;
       case Direction.LEFT:
-        if (x >= r) return false;
+        if (x > r) return false;
         break;
     }
 
@@ -50,5 +50,9 @@ export class Circle extends Shape {
   public getXYR = () => {
     const { x, y, r } = this;
     return { cx: x, cy: y, rad: r };
+  };
+
+  public increaseSpeed = (n: number) => {
+    this.speed += n;
   };
 }
