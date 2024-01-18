@@ -26,6 +26,7 @@ export class Game {
   private direction: Direction = Direction.RIGHT;
   private circle: Circle;
   private square: Square;
+  private afId: number = 0;
 
   constructor(c: Context) {
     this.c = c;
@@ -33,11 +34,11 @@ export class Game {
     this.circle = new Circle(c, 25, 25, 25);
   }
 
-  public move(direction: Direction) {
+  public move = (direction: Direction) => {
     this.direction = direction;
-  }
+  };
 
-  public animate() {
+  public animate = () => {
     const { width, height } = this.c.cnv;
     this.c.ctx.clearRect(0, 0, width, height);
 
@@ -56,8 +57,12 @@ export class Game {
     this.square.draw();
     this.circle.draw();
 
-    requestAnimationFrame(() => this.animate());
-  }
+    this.afId = requestAnimationFrame(() => this.animate());
+  };
+
+  public stop = () => {
+    cancelAnimationFrame(this.afId);
+  };
 }
 
 const createRandomSquare = (c: Context) => {

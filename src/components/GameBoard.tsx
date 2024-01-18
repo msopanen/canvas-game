@@ -3,7 +3,12 @@ import { Game, Context } from "../game";
 import { Direction } from "../types";
 import { SoundPlayer } from "../sounds";
 
-const GameBoard: FC = () => {
+export interface GameBoardProps {
+  start: boolean;
+  onStop: () => void;
+}
+
+const GameBoard: FC<GameBoardProps> = ({ start, onStop }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const gameRef = useRef<Game | null>(null);
@@ -60,14 +65,18 @@ const GameBoard: FC = () => {
           break;
         case "Escape":
           console.log("ESC");
+          gameRef.current?.stop();
+          onStop();
           break;
         default:
           break;
       }
     };
 
-    requestAnimationFrame(() => gameRef.current?.animate());
-  }, []);
+    if (start) {
+      requestAnimationFrame(() => gameRef.current?.animate());
+    }
+  }, [start, onStop]);
 
   return <canvas ref={canvasRef} />;
 };
